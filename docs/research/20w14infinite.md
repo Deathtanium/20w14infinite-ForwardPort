@@ -34,6 +34,29 @@ Downloaded for inspection: `client.jar` (sha1 `cc5cb23748614a6396ffb77427b4f11f4
 | Random + authored worlds | **Data-driven** dimension JSON + **custom `ChunkGenerator` codec** registered on the server; configs describe “scripted” layers, structures, exit behavior. |
 | Coordinate translation | **Default (this mod):** same as vanilla — each custom dimension uses its JSON **`dimension_type`** (e.g. `coordinate_scale`) and **Nether-style portal linking** so positions map predictably. **`exit_to_spawn`** in a dimension script is **opt-in** for small sandbox maps only; it snaps the player to respawn when leaving to the Overworld, bypassing that translation for those worlds. |
 
+## Exact random-dimension generation (can we copy it?)
+
+**Short answer:** **Not in this repo today.** The **default procedural worlds** in the 1.21.11 mod (`ProceduralDimensionFactory`) are a **new implementation**: seeded PRNG + a few hand-picked “archetypes” (wavy surface, underground grid, etc.). They are **inspired** by the *idea* of 20w14∞ (hash/seed → varied worlds) but they are **not** a port of Mojang’s original code paths.
+
+**What the snapshot actually did (high level, from wiki + behavior):**
+
+- Each “random” dimension was derived from a **string** (book text, `/warp` argument). That string was **hashed** to a stable **dimension id / seed** so the same text always reached the same world.
+- Generation mixed **Overworld-like noise** with **randomized parameters**: biomes, block choices, structures, sky/lighting behavior, etc. Easter egg dimensions were **hard-coded** exceptions.
+
+**Why we don’t have a line-for-line copy:**
+
+1. **Obfuscated bytecode:** The published `20w14infinite` `client.jar` uses **short class names**; there is no published **Yarn** mapping set for that snapshot in the usual Fabric ecosystem, so finding “the” random-dimension class requires **decompilation** (e.g. Vineflower/CFR) and manual tracing.
+2. **Different engine:** 20w14∞ was built on the **1.16-era** worldgen stack (pre–modern data-driven dimension JSON). Porting “exact” behavior to **1.21.11** means re-expressing the same *intent* in today’s `ChunkGenerator` / codec / registry model, not pasting bytecode.
+3. **`/debugdim`:** The snapshot wrote **debug dumps** of dimension/biome settings; those files would be the best Rosetta stone if extracted from a running snapshot world—still not automatic in this repo.
+
+**If you want maximum fidelity later:**
+
+1. Decompile `20w14infinite` (and ideally the **server** jar if you need pure server logic) and locate code that builds **random dimension settings** from a hash (search for uses of the warp string / dimension id).
+2. Map that logic to **parameters** we can feed into either **noise-based generation** (vanilla `NoiseBasedChunkGenerator` with randomized `NoiseGeneratorSettings` / biome source) or an expanded **script layer** system.
+3. Optionally compare with **`/debugdim`** output from the real snapshot for a few known seeds/strings.
+
+Until then, treat **“same as 20w14infinite”** in `AGENTS.md` as **behavioral parity** (varied procedural worlds from seed/hash), not bitwise-identical terrain.
+
 ## Optional local cache
 
 The script or CI can cache the snapshot `client.jar` under `.cache/20w14infinite/` (gitignored) for further bytecode or asset diffing.

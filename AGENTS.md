@@ -19,6 +19,7 @@ This document is the **authoritative design reference** for agents and maintaine
 **Design rule:** If a dimension **does not** have a **pre-written definition**—meaning no matching scripted layout in `config/.../dimension_scripts/` (or whatever hook resolves “this dimension id”)—then **by default** its terrain and character should be generated **the same way as in snapshot 20w14∞**: **procedural / hash- or seed-driven** worlds built from vanilla blocks, biomes, and features (the “billions of random dimensions” idea), not a blank void, not an error state, and not silently identical to the Overworld unless that is what the algorithm produces for that seed.
 
 - **Contrast:** A **named script** (JSON on disk) overrides this and applies **hand-authored** layers, structures, and flags (`exit_to_spawn`, unbreakable boxes).
+- **Exact snapshot parity:** The current implementation is **`ProceduralDimensionFactory`** (seeded archetypes + block palettes). It is **not** a decompiled port of Mojang’s 20w14∞ generator (obfuscated 1.15-era code; different engine). See `docs/research/20w14infinite.md` § *Exact random-dimension generation*. True “rip off” fidelity would require decompiling the snapshot and re-mapping its hash → worldgen pipeline into 1.21.11.
 - **Implementation note:** Until that procedural fallback exists end-to-end, document any temporary behavior here when it changes.
 
 ### Travel model (two modes, explicit)
@@ -69,8 +70,8 @@ Per-dimension **sky tint and related atmosphere** (the colored-sky feel of many 
 
 ### Implementation status (high level)
 
-- **Present:** Scripted generator + mixin registration, config JSON scripts, example dimension, `/w14i` commands, `exit_to_spawn` hook (opt-in), unbreakable regions, research notes.
-- **Planned / incomplete:** **20w14∞-style procedural default** for dimensions **without** a pre-written script (see above); **[SkyChanger](https://github.com/Deathtanium/SkyChanger)** wiring (random vs per-dimension config for sky params via `ClientboundGameEventPacket` / rain–thunder game events); full **portal hook API** for third-party mods; additional **example dimensions** (cave city, courtyard); richer **structure** options if needed; tests and polish.
+- **Present:** Scripted generator + mixin registration; **`dimension` field** in generator JSON for per-world script resolution; **procedural fallback** when no script file or empty `layers` (merged with file metadata); **builtin default scripts** for bundled dimensions; **example dimensions** `crimson_waves`, `cave_cities`, `church_courtyard`; `/w14i` commands including **`resolve`**; **`PortalDestinationEvents.RESOLVE`** for third-party portal hooks + default resolver by dimension id; **`ClientboundGameEventPacket`** `RAIN_LEVEL_CHANGE` / `THUNDER_LEVEL_CHANGE` on join/dimension change from script `sky_*` levels (optional **[SkyChanger](https://github.com/Deathtanium/SkyChanger)** add-on); `exit_to_spawn` (opt-in), unbreakable regions; research notes.
+- **Planned / incomplete:** Deeper **20w14∞** procedural parity (more archetypes, structures); optional **SkyChanger** Java API call when mod is present; **book-in-portal** item handler using `PortalDestinationEvents`; tests and polish.
 
 ---
 

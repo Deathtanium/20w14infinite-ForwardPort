@@ -1,6 +1,7 @@
 package com.deathtanium.w14i.command;
 
 import com.deathtanium.w14i.W14iMod;
+import com.deathtanium.w14i.api.PortalDestinationEvents;
 import com.deathtanium.w14i.config.DimensionScriptLoader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -38,7 +39,13 @@ public final class W14iCommands {
 								.then(Commands.argument("dimension", IdentifierArgument.id())
 										.executes(ctx -> {
 											Identifier id = IdentifierArgument.getId(ctx, "dimension");
-											return warpToDimension(ctx.getSource(), id);
+											return warpToDimension(ctx.getSource(), ResourceKey.create(Registries.DIMENSION, id));
+										})))
+						.then(Commands.literal("resolve")
+								.then(Commands.argument("token", StringArgumentType.greedyString())
+										.executes(ctx -> {
+											String token = StringArgumentType.getString(ctx, "token").trim();
+											return warpByToken(ctx.getSource(), token);
 										})))
 						.then(Commands.literal("script")
 								.then(Commands.argument("id", StringArgumentType.string())
@@ -57,15 +64,27 @@ public final class W14iCommands {
 		);
 	}
 
-	private static int warpToDimension(CommandSourceStack source, Identifier dimensionId) {
+	private static int warpByToken(CommandSourceStack source, String token) {
 		if (!(source.getEntity() instanceof ServerPlayer player)) {
 			source.sendFailure(Component.literal("Players only."));
 			return 0;
 		}
-		ResourceKey<Level> key = ResourceKey.create(Registries.DIMENSION, dimensionId);
+		var resolved = PortalDestinationEvents.RESOLVE.invoker().resolve(source.getServer(), token);
+		if (resolved.isEmpty()) {
+			source.sendFailure(Component.literal("No portal destination registered for: " + token));
+			return 0;
+		}
+		return warpToDimension(source, resolved.get());
+	}
+
+	private static int warpToDimension(CommandSourceStack source, ResourceKey<Level> key) {
+		if (!(source.getEntity() instanceof ServerPlayer player)) {
+			source.sendFailure(Component.literal("Players only."));
+			return 0;
+		}
 		ServerLevel target = source.getServer().getLevel(key);
 		if (target == null) {
-			source.sendFailure(Component.literal("Unknown dimension: " + dimensionId));
+			source.sendFailure(Component.literal("Unknown dimension: " + key.identifier()));
 			return 0;
 		}
 		var border = target.getWorldBorder();
@@ -74,7 +93,7 @@ public final class W14iCommands {
 		int y = target.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
 		Vec3 pos = Vec3.atBottomCenterOf(new BlockPos(x, y, z));
 		player.teleport(new TeleportTransition(target, pos, Vec3.ZERO, 0.0F, 0.0F, TeleportTransition.DO_NOTHING));
-		source.sendSuccess(() -> Component.literal("Warped to " + dimensionId), true);
+		source.sendSuccess(() -> Component.literal("Warped to " + key.identifier()), true);
 		return 1;
 	}
 }

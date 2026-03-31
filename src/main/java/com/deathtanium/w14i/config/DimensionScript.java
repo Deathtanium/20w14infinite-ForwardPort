@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 
@@ -20,16 +21,26 @@ public record DimensionScript(
 		 * Default {@code false}: travel uses normal vanilla rules (see dimension JSON {@code coordinate_scale} and portal linking).
 		 */
 		boolean exitToSpawn,
-		List<UnbreakableBox> unbreakableRegions
+		List<UnbreakableBox> unbreakableRegions,
+		/**
+		 * Optional 0..1 rain level for SkyChanger / game events when present; empty = random procedural or dimension default.
+		 */
+		Optional<Double> skyRainLevel,
+		/**
+		 * Optional 0..1 thunder level (typically &lt;= rain); empty = random procedural or dimension default.
+		 */
+		Optional<Double> skyThunderLevel
 ) {
-	public static final DimensionScript EMPTY = new DimensionScript(List.of(), List.of(), false, List.of());
+	public static final DimensionScript EMPTY = new DimensionScript(List.of(), List.of(), false, List.of(), Optional.empty(), Optional.empty());
 
 	public static final Codec<DimensionScript> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 					Layer.CODEC.listOf().optionalFieldOf("layers", List.of()).forGetter(DimensionScript::layers),
 					StructureSpawn.CODEC.listOf().optionalFieldOf("structures", List.of()).forGetter(DimensionScript::structures),
 					Codec.BOOL.optionalFieldOf("exit_to_spawn", false).forGetter(DimensionScript::exitToSpawn),
-					UnbreakableBox.CODEC.listOf().optionalFieldOf("unbreakable_regions", List.of()).forGetter(DimensionScript::unbreakableRegions)
+					UnbreakableBox.CODEC.listOf().optionalFieldOf("unbreakable_regions", List.of()).forGetter(DimensionScript::unbreakableRegions),
+					Codec.DOUBLE.optionalFieldOf("sky_rain_level").forGetter(DimensionScript::skyRainLevel),
+					Codec.DOUBLE.optionalFieldOf("sky_thunder_level").forGetter(DimensionScript::skyThunderLevel)
 			).apply(instance, DimensionScript::new)
 	);
 
