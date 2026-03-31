@@ -14,6 +14,13 @@ This document is the **authoritative design reference** for agents and maintaine
 - **Manual definition** of world generation: authors control layers (terrain style, materials), optional **structure template** placement (`.nbt` under datapack `data/<namespace>/structures/`), and **regions** where breaking is forbidden.
 - **Not a 1:1 reimplementation** of snapshot 20w14∞; the goal is the same *class* of experience (many bespoke dimensions, unusual generation, book/portal flavor) with **maintainable, data-driven** tools.
 
+### Default generation when there is no author script (20w14∞-style)
+
+**Design rule:** If a dimension **does not** have a **pre-written definition**—meaning no matching scripted layout in `config/.../dimension_scripts/` (or whatever hook resolves “this dimension id”)—then **by default** its terrain and character should be generated **the same way as in snapshot 20w14∞**: **procedural / hash- or seed-driven** worlds built from vanilla blocks, biomes, and features (the “billions of random dimensions” idea), not a blank void, not an error state, and not silently identical to the Overworld unless that is what the algorithm produces for that seed.
+
+- **Contrast:** A **named script** (JSON on disk) overrides this and applies **hand-authored** layers, structures, and flags (`exit_to_spawn`, unbreakable boxes).
+- **Implementation note:** Until that procedural fallback exists end-to-end, document any temporary behavior here when it changes.
+
 ### Travel model (two modes, explicit)
 
 1. **Default (most dimensions):** **Vanilla-style coordinate translation** and **portal linking**. Each dimension’s behavior comes from its **`dimension_type`** JSON (`coordinate_scale`, height, etc.). Nether portals behave like vanilla unless intentionally extended. This is the default for large or procedural-feeling worlds.
@@ -54,7 +61,7 @@ This document is the **authoritative design reference** for agents and maintaine
 ### Implementation status (high level)
 
 - **Present:** Scripted generator + mixin registration, config JSON scripts, example dimension, `/w14i` commands, `exit_to_spawn` hook (opt-in), unbreakable regions, research notes.
-- **Planned / incomplete:** Full **portal hook API** for third-party mods; additional **example dimensions** (cave city, courtyard); richer **structure** options if needed; tests and polish.
+- **Planned / incomplete:** **20w14∞-style procedural default** for dimensions **without** a pre-written script (see above); full **portal hook API** for third-party mods; additional **example dimensions** (cave city, courtyard); richer **structure** options if needed; tests and polish.
 
 ---
 
