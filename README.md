@@ -6,7 +6,7 @@ Fabric mod for Minecraft 1.21.11: server-side “infinite dimensions” inspired
 
 ## Intended final features (full detail)
 
-The complete **design target, scope, non-goals, and implementation checklist** for this project are maintained in **[`AGENTS.md`](AGENTS.md)** so tooling and contributors share one reference. Read that file before large changes.
+The complete **design target, scope, non-goals, and implementation checklist** for this project are maintained in **[`AGENTS.md`](AGENTS.md)** so tooling and contributors share one reference. Read that file before large changes. It also describes **[SkyChanger](https://github.com/Deathtanium/SkyChanger)** integration for per-dimension sky tint (vanilla packets, optional companion mod).
 
 ## Setup
 

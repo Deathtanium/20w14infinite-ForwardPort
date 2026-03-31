@@ -6,7 +6,7 @@ This document is the **authoritative design reference** for agents and maintaine
 
 ## Intended final features (target scope)
 
-**Hard constraint:** The mod must run on **dedicated servers** with **unmodded (vanilla) Java clients**. No client mod requirement. Any feature that needs custom blocks, items, or packets on the client is out of scope unless it can be expressed entirely through vanilla blocks/entities and server-authoritative logic.
+**Hard constraint:** The mod must run on **dedicated servers** with **unmodded (vanilla) Java clients**. No **required** client mod. Optional companion mods may extend behavior using **vanilla-understood** packets (see **Sky / atmosphere** below).
 
 ### Core: many worlds, one server
 
@@ -25,6 +25,15 @@ This document is the **authoritative design reference** for agents and maintaine
 
 1. **Default (most dimensions):** **Vanilla-style coordinate translation** and **portal linking**. Each dimension’s behavior comes from its **`dimension_type`** JSON (`coordinate_scale`, height, etc.). Nether portals behave like vanilla unless intentionally extended. This is the default for large or procedural-feeling worlds.
 2. **Optional “sandbox exit” (tiny dimensions only):** For boxed or minigame-style maps, scripts may set **`exit_to_spawn`**. When leaving **to the Overworld**, the player can be sent to **respawn** (similar to End exit / spawn resolution), avoiding awkward coordinate coupling for **small** maps. This must remain **opt-in** and **not** the default for big worlds.
+
+### Sky / atmosphere (SkyChanger integration)
+
+Per-dimension **sky tint and related atmosphere** (the colored-sky feel of many 20w14∞ worlds) are **not** implemented by shipping custom client code in this repo. They are driven **server-side** via **[SkyChanger](https://github.com/Deathtanium/SkyChanger)** (companion Fabric API mod): this dimension mod sets each world’s SkyChanger parameters through that API; SkyChanger applies them using vanilla **`ClientboundGameEventPacket`** with the **`RAIN_LEVEL_CHANGE`** and **`THUNDER_LEVEL_CHANGE`** game-event kinds (see SkyChanger and `GameEvent` in the game for exact identifiers) so **unmodded clients** receive standard game-event packets.
+
+- **Per dimension:** When a dimension is created or entered, this mod should set that world’s SkyChanger state using either:
+  - **Random parameters** derived from world/dimension seed or id (20w14∞-like variety), or
+  - **Authoritative values** read from a **dedicated per-dimension (per-world) section** in whatever config tree this mod uses to organize dimensions (alongside or inside the same files as generation scripts—exact layout TBD, but the intent is **one place per dimension** for sky overrides when not random).
+- **Without SkyChanger:** Dimensions still load and play; sky defaults to normal dimension-type behavior until integration is wired.
 
 ### Dimension generation (scripted)
 
@@ -61,7 +70,7 @@ This document is the **authoritative design reference** for agents and maintaine
 ### Implementation status (high level)
 
 - **Present:** Scripted generator + mixin registration, config JSON scripts, example dimension, `/w14i` commands, `exit_to_spawn` hook (opt-in), unbreakable regions, research notes.
-- **Planned / incomplete:** **20w14∞-style procedural default** for dimensions **without** a pre-written script (see above); full **portal hook API** for third-party mods; additional **example dimensions** (cave city, courtyard); richer **structure** options if needed; tests and polish.
+- **Planned / incomplete:** **20w14∞-style procedural default** for dimensions **without** a pre-written script (see above); **[SkyChanger](https://github.com/Deathtanium/SkyChanger)** wiring (random vs per-dimension config for sky params via `ClientboundGameEventPacket` / rain–thunder game events); full **portal hook API** for third-party mods; additional **example dimensions** (cave city, courtyard); richer **structure** options if needed; tests and polish.
 
 ---
 
