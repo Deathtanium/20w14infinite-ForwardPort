@@ -32,7 +32,7 @@ Downloaded for inspection: `client.jar` (sha1 `cc5cb23748614a6396ffb77427b4f11f4
 | Book → portal chooses dimension | **Server-side** portal/travel API: resolve a target `ResourceKey<Level>` (or dimension id) from arbitrary input; vanilla clients only need the dimension to exist server-side + synced registries where required. |
 | `/warp` | Server command (or integrated with the same resolver as custom portals). |
 | Random + authored worlds | **Data-driven** dimension JSON + **custom `ChunkGenerator` codec** registered on the server; configs describe “scripted” layers, structures, exit behavior. |
-| Coordinate translation | Snapshot used many separate worlds; **exit to overworld spawn** (End-exit style) avoids long-term cross-dimension coordinate pairing when desired. |
+| Coordinate translation | **Default (this mod):** same as vanilla — each custom dimension uses its JSON **`dimension_type`** (e.g. `coordinate_scale`) and **Nether-style portal linking** so positions map predictably. **`exit_to_spawn`** in a dimension script is **opt-in** for small sandbox maps only; it snaps the player to respawn when leaving to the Overworld, bypassing that translation for those worlds. |
 
 ## Optional local cache
 

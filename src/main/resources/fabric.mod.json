@@ -1,41 +1,33 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "w14i_forwardport",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "20w14infinite Forward Port",
+	"description": "Server-side infinite-style dimensions with data-driven scripts (inspired by 20w14∞).",
 	"authors": [
-		"Me!"
+		"Deathtanium"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Deathtanium/20w14infinite-ForwardPort"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/w14i_forwardport/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.deathtanium.w14i.W14iMod"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			"com.deathtanium.w14i.W14iModClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
-		{
-			"config": "modid.client.mixins.json",
-			"environment": "client"
-		}
+		"w14i_forwardport.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.2",
 		"minecraft": "~1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
