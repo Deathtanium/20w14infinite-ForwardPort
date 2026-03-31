@@ -1,9 +1,9 @@
 {
 	"required": true,
-	"package": "com.example.mixin.client",
+	"package": "com.deathtanium.w14i.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"client": [
-		"ExampleClientMixin"
+	"mixins": [
+		"ChunkGeneratorsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

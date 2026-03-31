@@ -22,7 +22,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"modid" {
+		"w14i_forwardport" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
