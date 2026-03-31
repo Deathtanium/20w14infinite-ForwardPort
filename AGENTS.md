@@ -19,6 +19,7 @@ This document is the **authoritative design reference** for agents and maintaine
 **Design rule:** If a dimension **does not** have a **pre-written definition**—meaning no matching scripted layout in `config/.../dimension_scripts/` (or whatever hook resolves “this dimension id”)—then **by default** its terrain and character should be generated **the same way as in snapshot 20w14∞**: **procedural / hash- or seed-driven** worlds built from vanilla blocks, biomes, and features (the “billions of random dimensions” idea), not a blank void, not an error state, and not silently identical to the Overworld unless that is what the algorithm produces for that seed.
 
 - **Contrast:** A **named script** (JSON on disk) overrides this and applies **hand-authored** layers, structures, and flags (`exit_to_spawn`, unbreakable boxes).
+- **Exact snapshot parity:** The current implementation is **`ProceduralDimensionFactory`** (seeded archetypes + block palettes). It is **not** a decompiled port of Mojang’s 20w14∞ generator (obfuscated 1.15-era code; different engine). See `docs/research/20w14infinite.md` § *Exact random-dimension generation*. True “rip off” fidelity would require decompiling the snapshot and re-mapping its hash → worldgen pipeline into 1.21.11.
 - **Implementation note:** Until that procedural fallback exists end-to-end, document any temporary behavior here when it changes.
 
 ### Travel model (two modes, explicit)
