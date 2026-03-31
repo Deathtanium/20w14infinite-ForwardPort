@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 
 /**
@@ -74,6 +76,31 @@ public final class DimensionScriptLoader {
 		} catch (IOException e) {
 			W14iMod.LOGGER.error("Failed to scan dimension_scripts", e);
 		}
+		registerBuiltinDefaults();
+	}
+
+	private static void registerBuiltinDefaults() {
+		putIfAbsent(W14iMod.id("cave_cities"), new DimensionScript(
+				List.of(new DimensionScript.Layer.UndergroundCity(28, 72,
+						"minecraft:stone_bricks", "minecraft:stone_bricks", "minecraft:mossy_stone_bricks", 14)),
+				List.of(),
+				false,
+				List.of(),
+				Optional.of(0.35),
+				Optional.of(0.12)
+		));
+		putIfAbsent(W14iMod.id("church_courtyard"), new DimensionScript(
+				List.of(new DimensionScript.Layer.FlatBox(60, 61, "minecraft:stone_bricks")),
+				List.of(),
+				true,
+				List.of(new DimensionScript.UnbreakableBox(new BlockPos(-8, 60, -8), new BlockPos(8, 72, 8))),
+				Optional.of(0.05),
+				Optional.of(0.0)
+		));
+	}
+
+	private static void putIfAbsent(Identifier id, DimensionScript script) {
+		CACHE.putIfAbsent(id, script);
 	}
 
 	private static void writeExample(Path root) throws IOException {

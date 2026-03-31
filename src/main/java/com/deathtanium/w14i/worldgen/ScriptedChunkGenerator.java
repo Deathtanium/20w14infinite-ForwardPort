@@ -1,7 +1,7 @@
 package com.deathtanium.w14i.worldgen;
 
+import com.deathtanium.w14i.DimensionScriptRegistry;
 import com.deathtanium.w14i.config.DimensionScript;
-import com.deathtanium.w14i.config.DimensionScriptLoader;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
@@ -35,6 +38,7 @@ public final class ScriptedChunkGenerator extends ChunkGenerator {
 	public static final MapCodec<ScriptedChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 					Identifier.CODEC.fieldOf("script").forGetter(g -> g.scriptId),
+					ResourceKey.codec(Registries.DIMENSION).fieldOf("dimension").forGetter(g -> g.dimensionKey),
 					BiomeSource.CODEC.fieldOf("biome_source").forGetter(ScriptedChunkGenerator::getBiomeSource),
 					Codec.INT.optionalFieldOf("min_y", -64).forGetter(g -> g.minY),
 					Codec.INT.optionalFieldOf("height", 384).forGetter(g -> g.height)
@@ -42,12 +46,14 @@ public final class ScriptedChunkGenerator extends ChunkGenerator {
 	);
 
 	private final Identifier scriptId;
+	private final ResourceKey<Level> dimensionKey;
 	private final int minY;
 	private final int height;
 
-	public ScriptedChunkGenerator(Identifier scriptId, BiomeSource biomeSource, int minY, int height) {
+	public ScriptedChunkGenerator(Identifier scriptId, ResourceKey<Level> dimensionKey, BiomeSource biomeSource, int minY, int height) {
 		super(biomeSource);
 		this.scriptId = scriptId;
+		this.dimensionKey = dimensionKey;
 		this.minY = minY;
 		this.height = height;
 	}
@@ -56,13 +62,21 @@ public final class ScriptedChunkGenerator extends ChunkGenerator {
 		return scriptId;
 	}
 
+	public ResourceKey<Level> dimensionKey() {
+		return dimensionKey;
+	}
+
 	@Override
 	protected MapCodec<? extends ChunkGenerator> codec() {
 		return CODEC;
 	}
 
 	private DimensionScript script() {
-		return DimensionScriptLoader.get(scriptId).orElse(DimensionScript.EMPTY);
+		return DimensionScriptRegistry.forGeneration(dimensionKey, scriptId, fallbackSeed());
+	}
+
+	private long fallbackSeed() {
+		return (long) dimensionKey.identifier().hashCode() * 31L + (long) scriptId.hashCode();
 	}
 
 	@Override
@@ -250,7 +264,7 @@ public final class ScriptedChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void addDebugScreenInfo(List<String> list, RandomState randomState, BlockPos pos) {
-		list.add("W14i scripted: " + scriptId);
+		list.add("W14i scripted: " + scriptId + " @ " + dimensionKey.identifier());
 	}
 
 }
