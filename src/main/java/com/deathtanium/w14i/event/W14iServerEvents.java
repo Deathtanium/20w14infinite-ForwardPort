@@ -2,6 +2,7 @@ package com.deathtanium.w14i.event;
 
 import com.deathtanium.w14i.DimensionScriptRegistry;
 import com.deathtanium.w14i.config.DimensionScript;
+import com.deathtanium.w14i.worldgen.ScriptedChunkGenerator;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.portal.TeleportTransition;
 
 public final class W14iServerEvents {
@@ -18,6 +20,8 @@ public final class W14iServerEvents {
 	}
 
 	public static void register() {
+		SkyAtmosphereHandler.register();
+
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			DimensionScriptRegistry.clear();
 			for (ServerLevel level : server.getAllLevels()) {
@@ -43,6 +47,12 @@ public final class W14iServerEvents {
 	 * and portal linking from their {@code dimension_type} and portal logic.
 	 */
 	private static void afterPlayerChangeWorld(ServerPlayer player, ServerLevel origin, ServerLevel destination) {
+		ChunkGenerator destGen = destination.getChunkSource().getGenerator();
+		if (destGen instanceof ScriptedChunkGenerator) {
+			DimensionScriptRegistry.syncFrom(destination);
+		}
+		SkyAtmosphereHandler.applyOnEnter(player);
+
 		DimensionScript script = DimensionScriptRegistry.get(origin.dimension()).orElse(null);
 		if (script == null || !script.exitToSpawn()) {
 			return;
