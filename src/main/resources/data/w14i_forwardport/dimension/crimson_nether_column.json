@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:overworld",
+  "generator": {
+    "type": "w14i_forwardport:scripted",
+    "dimension": "w14i_forwardport:crimson_nether_column",
+    "script": "w14i_forwardport:crimson_nether_column",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:crimson_forest"
+    },
+    "min_y": -64,
+    "height": 384,
+    "apply_biome_decoration_features": false
+  }
+}

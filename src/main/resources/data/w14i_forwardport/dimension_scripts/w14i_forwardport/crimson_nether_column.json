@@ -1,0 +1,82 @@
+{
+  "layers": [
+    {
+      "type": "bedrock_floor",
+      "min_y": -64,
+      "thickness": 1,
+      "block": "minecraft:bedrock"
+    },
+    {
+      "type": "netherrack_column",
+      "bottom_y": -63,
+      "min_thickness": 128,
+      "max_thickness": 196,
+      "block": "minecraft:netherrack"
+    },
+    {
+      "type": "pocket_scatter",
+      "block": "minecraft:nether_quartz_ore",
+      "min_y": -63,
+      "max_y": 200,
+      "chance": 0.012,
+      "attempts": 64
+    },
+    {
+      "type": "pocket_scatter",
+      "block": "minecraft:nether_gold_ore",
+      "min_y": -63,
+      "max_y": 200,
+      "chance": 0.008,
+      "attempts": 48
+    },
+    {
+      "type": "pocket_scatter",
+      "block": "minecraft:lava",
+      "min_y": -63,
+      "max_y": 200,
+      "chance": 0.006,
+      "attempts": 32
+    },
+    {
+      "type": "surface_wavy",
+      "base_y": 118,
+      "wave_amplitude": 7,
+      "wave_period": 28,
+      "top_block": "minecraft:crimson_nylium",
+      "fill_below": "minecraft:netherrack",
+      "fill_above_block": "minecraft:netherrack"
+    },
+    {
+      "type": "surface_decoration",
+      "block": "minecraft:crimson_roots",
+      "base_block": "minecraft:crimson_nylium",
+      "chance": 0.42
+    }
+  ],
+  "structures": [
+    {
+      "type": "placed_feature",
+      "placed_feature": "minecraft:crimson_fungus",
+      "spacing_chunks": 96,
+      "salt": 901,
+      "chance_per_chunk": 0.002,
+      "attempts": 1,
+      "y_min": 90,
+      "y_max": 220
+    },
+    {
+      "template": "w14i_forwardport:surface_placeholder",
+      "spacing_chunks": 14,
+      "salt": 3,
+      "surface_y": true,
+      "heightmap": "WORLD_SURFACE_WG",
+      "min_y": 70,
+      "max_y": 240
+    }
+  ],
+  "apply_biome_decoration_features": false,
+  "exit_to_spawn": false,
+  "unbreakable_regions": [],
+  "sky_rain_level": 0.0,
+  "sky_thunder_level": 0.0
+}

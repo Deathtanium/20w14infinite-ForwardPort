@@ -38,8 +38,9 @@ Per-dimension **sky tint and related atmosphere** (the colored-sky feel of many 
 
 ### Dimension generation (scripted)
 
-- **Layered fills** (examples of intent): wavy surface terrain with chosen top/fill blocks; underground “city” grids (floor/ceiling/walls/air); flat filled boxes for courtyards or void shells.
-- **Structures:** Place vanilla-block **structure templates** from the datapack on a **deterministic spacing** (seeded), so authors can add “non-vanilla pool” builds by shipping **custom `.nbt`** files—not by relying on vanilla structure pools alone.
+- **Layered fills** (examples of intent): wavy surface terrain with chosen top/fill blocks; underground “city” grids (floor/ceiling/walls/air); flat filled boxes for courtyards or void shells; **bedrock floor**, **variable-height netherrack column**, **ore/fluid pockets**, **decoration on top of a base block** (e.g. roots on nylium).
+- **Structures and features** (in script `structures` array): (1) **Templates** — `.nbt` under `data/<namespace>/structures/` (same as structure blocks / datapacks), with `spacing_chunks`, `salt`, optional **`surface_y`** + **`heightmap`**, **`min_y`/`max_y`**, **`rotation`**; (2) **`type: "vanilla"`** — a **registry** structure id (as in `/locate`), same spacing/salt, optional **`biome_filter`**; (3) **`type: "placed_feature"`** — scatter a **placed feature** id (e.g. `minecraft:crimson_fungus`) with **`chance_per_chunk`**, **`attempts`**, **`y_min`/`y_max`**. Bundled scripts may ship in the mod jar under `data/w14i_forwardport/dimension_scripts/`; **`config/w14i_forwardport/dimension_scripts/`** overrides the same id.
+- **Vanilla biome decoration:** Script field **`apply_biome_decoration_features`** (default `true`) and optional generator field **`apply_biome_decoration_features`** control whether vanilla placed features (biome JSON) run. Set both to `false` for fully manual worlds and rely on scripted layers + `structures` only.
 - **Protection:** **Axis-aligned boxes** in script JSON where **players cannot break blocks** (server-side cancel), for courtyards or puzzle regions.
 
 ### Portal and access surface (20w14∞-inspired, extensible)
@@ -70,7 +71,7 @@ Per-dimension **sky tint and related atmosphere** (the colored-sky feel of many 
 
 ### Implementation status (high level)
 
-- **Present:** Scripted generator + mixin registration; **`dimension` field** in generator JSON for per-world script resolution; **procedural fallback** when no script file or empty `layers` (merged with file metadata); **builtin default scripts** for bundled dimensions; **example dimensions** `crimson_waves`, `cave_cities`, `church_courtyard`; `/w14i` commands including **`resolve`**; **`PortalDestinationEvents.RESOLVE`** for third-party portal hooks + default resolver by dimension id; **`ClientboundGameEventPacket`** `RAIN_LEVEL_CHANGE` / `THUNDER_LEVEL_CHANGE` on join/dimension change from script `sky_*` levels (optional **[SkyChanger](https://github.com/Deathtanium/SkyChanger)** add-on); `exit_to_spawn` (opt-in), unbreakable regions; research notes.
+- **Present:** Scripted generator + mixin registration; **`dimension` field** in generator JSON for per-world script resolution; **procedural fallback** when no script file or empty `layers` (merged with file metadata); **bundled jar scripts** under `data/.../dimension_scripts/`; **structure/template + vanilla structure + placed-feature** scattering; optional **disable vanilla biome decoration**; **builtin default scripts** for bundled dimensions; **example dimensions** including **`crimson_nether_column`** (crimson nether column demo); `/w14i` commands including **`resolve`**; **`PortalDestinationEvents.RESOLVE`**; sky game events from script `sky_*`; `exit_to_spawn` (opt-in), unbreakable regions; research notes (including **Yarn `20w14infinite` branch** for mapping reference).
 - **Planned / incomplete:** Deeper **20w14∞** procedural parity (more archetypes, structures); optional **SkyChanger** Java API call when mod is present; **book-in-portal** item handler using `PortalDestinationEvents`; tests and polish.
 
 ---
@@ -83,7 +84,7 @@ Per-dimension **sky tint and related atmosphere** (the colored-sky feel of many 
 
 ## Config layout
 
-- Dimension **generation scripts**: `config/w14i_forwardport/dimension_scripts/<namespace>/<path>.json` → id `namespace:path`.
+- Dimension **generation scripts**: `config/w14i_forwardport/dimension_scripts/<namespace>/<path>.json` → id `namespace:path`. Same paths may exist **inside the mod jar** under `data/w14i_forwardport/dimension_scripts/`; config **wins** on reload.
 - Dimension **registration** (type + generator): data pack JSON under this mod’s resources (see `data/w14i_forwardport/dimension/`).
 
 ## Research

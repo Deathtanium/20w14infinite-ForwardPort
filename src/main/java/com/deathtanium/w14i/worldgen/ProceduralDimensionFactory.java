@@ -26,7 +26,9 @@ public final class ProceduralDimensionFactory {
 					3.0 + rs.nextDouble() * 8.0,
 					16.0 + rs.nextDouble() * 32.0,
 					pick(rs, PALETTE_TOP),
-					pick(rs, PALETTE_FILL)
+					pick(rs, PALETTE_FILL),
+					Optional.empty(),
+					Optional.empty()
 			));
 			case 1 -> layers.add(new DimensionScript.Layer.UndergroundCity(
 					20 + rs.nextInt(20),
@@ -42,7 +44,9 @@ public final class ProceduralDimensionFactory {
 						2.0 + rs.nextDouble() * 5.0,
 						20.0 + rs.nextDouble() * 20.0,
 						"minecraft:grass_block",
-						"minecraft:dirt"
+						"minecraft:dirt",
+						Optional.empty(),
+						Optional.empty()
 				));
 				layers.add(new DimensionScript.Layer.UndergroundCity(
 						25,
@@ -66,6 +70,7 @@ public final class ProceduralDimensionFactory {
 		return new DimensionScript(
 				layers,
 				List.of(),
+				true,
 				false,
 				List.of(),
 				Optional.of(rain),

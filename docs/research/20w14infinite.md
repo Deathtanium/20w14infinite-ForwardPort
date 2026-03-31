@@ -22,7 +22,7 @@ Downloaded for inspection: `client.jar` (sha1 `cc5cb23748614a6396ffb77427b4f11f4
 |----------|--------|
 | **Fabric Intermediary** | Available: `net.fabricmc:intermediary:20w14infinite` (maps official obfuscated names → intermediary). |
 | **Fabric Loader** | Meta API lists loader builds with intermediary for `20w14infinite` (e.g. stable loader `0.18.5` in a sample response). |
-| **Yarn for 20w14infinite** | Not found in public Fabric Yarn tags (this snapshot is old); **decompilation** or **MCP** for that era would be needed for human-readable Mojang names. |
+| **Yarn for 20w14infinite** | The Fabric Yarn repo has a **`20w14infinite` branch** ([github.com/FabricMC/yarn @ 20w14infinite](https://github.com/FabricMC/yarn/tree/20w14infinite)) with named mappings for that snapshot. Use it to read how random dimensions were wired (search for dimension/worldgen-related classes), then **re-express** the behavior in 1.21.11—this mod does **not** port that bytecode; `ProceduralDimensionFactory` is a separate seeded implementation for behavioral parity only. |
 | **This repo (1.21.11)** | Uses **Mojang mappings via Loom** (`loom.officialMojangMappings()`), which matches modern Fabric example mods. |
 
 ## Cross-reference — how we align the 1.21.11 mod

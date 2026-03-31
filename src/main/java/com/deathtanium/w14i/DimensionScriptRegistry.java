@@ -51,6 +51,7 @@ public final class DimensionScriptRegistry {
 			return new DimensionScript(
 					d.layers(),
 					d.structures(),
+					d.applyBiomeDecorationFeatures(),
 					d.exitToSpawn(),
 					d.unbreakableRegions(),
 					d.skyRainLevel().or(() -> proc.skyRainLevel()),
@@ -60,6 +61,7 @@ public final class DimensionScriptRegistry {
 		return new DimensionScript(
 				proc.layers(),
 				d.structures(),
+				d.applyBiomeDecorationFeatures(),
 				d.exitToSpawn(),
 				d.unbreakableRegions(),
 				d.skyRainLevel().or(() -> proc.skyRainLevel()),
